@@ -239,32 +239,32 @@ module icache_hier_top
       .FETCH_ADDR_WIDTH (FETCH_ADDR_WIDTH    ), //= 32,       // Size of the fetch address
       .FETCH_DATA_WIDTH (PRI_FETCH_DATA_WIDTH), //= 128,      // Size of the fetch data
       .REFILL_DATA_WIDTH(SH_FETCH_DATA_WIDTH ), //= 128,      // Size of the fetch data
-      
+
       .NB_WAYS          (PRI_NB_WAYS         ), //= 4,        // Cache associativity
       .CACHE_SIZE       (PRI_CACHE_SIZE      ), //= 512      // Ccache capacity in Byte
       .CACHE_LINE       (PRI_CACHE_LINE      ), //= 1,        // in word of [PRI_FETCH_DATA_WIDTH]
-      
+
       .USE_REDUCED_TAG  (USE_REDUCED_TAG     ), //= "TRUE",   // TRUE | FALSE
       .L2_SIZE          (L2_SIZE             )  //= 512*1024  // Size of max(L2 ,ROM) program memory in Byte
     ) i_pri_icache (
       .clk                     (clk                                     ),
       .rst_n                   (rst_n                                   ),
       .test_en_i               (test_en_i                               ),
-      
+
       .fetch_req_i             (fetch_req_i[i]                          ),
       .fetch_addr_i            (fetch_addr_i[i]                         ),
       .fetch_gnt_o             (fetch_gnt_o[i]                          ),
       .fetch_rvalid_o          (fetch_rvalid_o[i]                       ),
       .fetch_rdata_o           (fetch_rdata_o[i]                        ),
-      
+
       .refill_req_o            (refill_req_int[i]                       ),
       .refill_gnt_i            (refill_gnt_int[i]                       ),
       .refill_addr_o           (refill_addr_int[i]                      ),
       .refill_r_valid_i        (refill_r_valid_int[i]                   ),
       .refill_r_data_i         (refill_r_data_int[i]                    ),
-      
+
       .enable_l1_l15_prefetch_i(enable_l1_l15_prefetch_i[i]             ),
-      
+
       .bypass_icache_i         (IC_ctrl_unit_bus_pri[i].bypass_req      ),
       .cache_is_bypassed_o     (IC_ctrl_unit_bus_pri[i].bypass_ack      ),
       .flush_icache_i          (IC_ctrl_unit_bus_pri[i].flush_req       ),
@@ -272,13 +272,13 @@ module icache_hier_top
       .flush_set_ID_req_i      (IC_ctrl_unit_bus_pri[i].sel_flush_req   ),
       .flush_set_ID_addr_i     (IC_ctrl_unit_bus_pri[i].sel_flush_addr  ),
       .flush_set_ID_ack_o      (IC_ctrl_unit_bus_pri[i].sel_flush_ack   )
-      
+
 `ifdef FEATURE_ICACHE_STAT
       ,
       .bank_hit_count_o        (IC_ctrl_unit_bus_pri[i].ctrl_hit_count  ),
       .bank_trans_count_o      (IC_ctrl_unit_bus_pri[i].ctrl_trans_count),
       .bank_miss_count_o       (IC_ctrl_unit_bus_pri[i].ctrl_miss_count ),
-      
+
       .ctrl_clear_regs_i       (IC_ctrl_unit_bus_pri[i].ctrl_clear_regs ),
       .ctrl_enable_regs_i      (IC_ctrl_unit_bus_pri[i].ctrl_enable_regs)
 `endif
@@ -313,13 +313,13 @@ module icache_hier_top
   ) ICACHE_INTERCONNECT (
     .clk_i         (clk                            ),
     .rst_ni        (rst_n                          ),
-    
+
     .request_i     (refill_req_int                 ), // Data request
     .address_i     (refill_addr_int                ), // Data request Address
     .grant_o       (refill_gnt_int                 ), //
     .response_o    (refill_r_valid_int             ), // Data Response Valid (For LOAD/STORE commands)
     .read_data_o   (refill_r_data_int              ), // Data Response DATA (For LOAD commands)
-    
+
     .request_o     (fetch_req_to_main_cache        ), // Data request
     .address_o     (fetch_addr_to_main_cache       ), // Data request Address
     .UID_o         (fetch_ID_to_main_cache         ), // Data request Address
@@ -460,7 +460,7 @@ module icache_hier_top
 
 
 
-  
+
 
   /////////////////////////////////////////////////////////////////
   //  █████╗ ██╗  ██╗██╗    ███╗   ██╗ ██████╗ ██████╗ ███████╗  //
@@ -470,7 +470,7 @@ module icache_hier_top
   // ██║  ██║██╔╝ ██╗██║    ██║ ╚████║╚██████╔╝██████╔╝███████╗  //
   // ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝    ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝  //
   /////////////////////////////////////////////////////////////////
-  
+
 
   assign axi_master_awid_o     = axi_out_intf.aw_id;
   assign axi_master_awaddr_o   = axi_out_intf.aw_addr;
@@ -544,10 +544,12 @@ module icache_hier_top
   );
 
 `ifndef VERILATOR
+`ifndef SYNTHESIS
   initial begin
     assert (AXI_ID > $clog2(SH_NB_BANKS))
       else $error("AXI input ID width must be larger than $clog2(SH_NB_BANKS) which is %d but width was %d", $clog2(SH_NB_BANKS), AXI_ID);
   end
 `endif
-   
+`endif
+
 endmodule // icache_hier_top
