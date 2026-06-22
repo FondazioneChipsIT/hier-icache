@@ -654,6 +654,7 @@ module pri_icache_controller
                     miss_counter_enable      = 1'b1;
 
                     enable_pipe      = 1'b0;
+                    fetch_gnt_o      = 1'b0;
 
                     refill_req_o     = 1'b1;
                     refill_addr_o    = fetch_addr_Q;
